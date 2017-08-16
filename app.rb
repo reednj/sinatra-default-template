@@ -15,10 +15,16 @@ require './lib/sinatra-schema-backup'
 use Rack::Deflater
 set :erb, :escape_html => true
 set :version, 'v0.1'
+set :log_sql, true
 
 configure :development do
-	also_reload './lib/model.rb'
-	also_reload './lib/extensions.rb'
+	Dir["./lib/*.rb"].each {|f| also_reload f }
+	Dir["./lib/**/*.rb"].each {|f| also_reload f }
+
+
+	if settings.log_sql
+		DB.logger = Logger.new(STDOUT)
+	end
 end
 
 configure :production do
